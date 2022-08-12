@@ -8,22 +8,53 @@ public class MapDisplay : MonoBehaviour
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
 
+    [SerializeField] private Material noiseMaterial;
+    [SerializeField] private Material colorMeshMaterial;
+    [SerializeField] private Material meshMaterial;
+
     public void DrawNoiseMap(float[,] noiseMap)
     {
+        textureRender.sharedMaterial = noiseMaterial;
+
         int width = noiseMap.GetLength(0);
         int height = noiseMap.GetLength(1);
 
-        Texture2D textureNoise = TextureGenerator(noiseMap);
+        Texture2D textureNoise = TextureGenerator(noiseMap);        
 
         textureRender.sharedMaterial.SetTexture("_BaseMap", textureNoise);
         textureRender.transform.localScale = new Vector3(width, 1, height);
     }
 
+    //public void DrawColoredNoiseMap(float[,] noiseMap)
+    //{
+    //    textureRender.sharedMaterial = colorNoiseMaterial;
+
+    //    int width = noiseMap.GetLength(0);
+    //    int height = noiseMap.GetLength(1);
+
+    //    Texture2D textureNoise = TextureGenerator(noiseMap);
+
+    //    textureRender.sharedMaterial.SetTexture("NoiseTex", textureNoise);
+    //    textureRender.transform.localScale = new Vector3(width, 1, height);
+    //}
+
     public void DrawMesh(MeshData meshData, float[,] noiseMap)
     {
         meshFilter.sharedMesh = meshData.CreateMesh();
+
+        meshRenderer.sharedMaterial = meshMaterial;
         meshRenderer.sharedMaterial.SetTexture("_BaseMap", TextureGenerator(noiseMap));
     }
+
+
+
+    public void DrawColoredMesh(MeshData meshData, float [,] noiseMap)
+    {
+        meshFilter.sharedMesh = meshData.CreateMesh();
+
+        meshRenderer.sharedMaterial = colorMeshMaterial;
+        meshRenderer.sharedMaterial.SetTexture("NoiseTex", TextureGenerator(noiseMap));
+    }   
 
     Texture2D TextureGenerator(float[,] noiseMap)
     {
