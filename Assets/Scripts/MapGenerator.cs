@@ -7,8 +7,9 @@ public class MapGenerator : MonoBehaviour
     public enum DrawMode { NoiseMap, Mesh, ColoredTerrain, ColoredNoise};
     public DrawMode drawMode;
 
-    public int mapWidth;
-    public int mapHeight;
+    const int mapChunckSize = 241;
+    [Range(0,6)]
+    public int levelOfDetail;
     public float noiseScale;
 
     public int octaves;
@@ -16,6 +17,7 @@ public class MapGenerator : MonoBehaviour
     public float persistance;
     public float lacunarity;
     public float heightMultiplier;
+    public AnimationCurve meshHeightCurve;
 
     public int seed;
     public Vector2 offset;
@@ -24,7 +26,7 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed,noiseScale, octaves, persistance, lacunarity, offset);
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunckSize, mapChunckSize, seed,noiseScale, octaves, persistance, lacunarity, offset);
 
         MapDisplay mapDisplay = FindObjectOfType<MapDisplay>();
 
@@ -34,11 +36,11 @@ public class MapGenerator : MonoBehaviour
         }
         else if(drawMode== DrawMode.Mesh)
         {
-            mapDisplay.DrawMesh(MeshGenerator.GenerateMesh(noiseMap, heightMultiplier), noiseMap);
+            mapDisplay.DrawMesh(MeshGenerator.GenerateMesh(noiseMap, heightMultiplier, meshHeightCurve, levelOfDetail), noiseMap);
         }
         else if (drawMode == DrawMode.ColoredTerrain)
         {
-            mapDisplay.DrawColoredMesh(MeshGenerator.GenerateMesh(noiseMap, heightMultiplier), noiseMap);
+            mapDisplay.DrawColoredMesh(MeshGenerator.GenerateMesh(noiseMap, heightMultiplier, meshHeightCurve, levelOfDetail), noiseMap);
         }
         //else if(drawMode == DrawMode.ColoredNoise)
         //{
@@ -53,15 +55,7 @@ public class MapGenerator : MonoBehaviour
     }
 
     void OnValidate()
-    {
-        if (mapWidth < 1)
-        {
-            mapWidth = 1;
-        }
-        if(mapHeight < 1)
-        {
-            mapHeight = 1;
-        }
+    {        
         if(lacunarity < 1)
         {
             lacunarity = 1;
